@@ -1,0 +1,22 @@
+# Abaikan virtual environment folder
+py-xgboost-env312/
+
+# Abaikan file users.csv
+dataset/users.csv
+
+# Abaikan file/artefak umum Python & Streamlit
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Abaikan file log dan konfigurasi sementara
+*.log
+*.tmp
+*.bak
+
+# Abaikan file Streamlit yang dibuat otomatis
+# .streamlit/config.toml
+# .streamlit/secrets.toml
