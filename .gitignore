@@ -1,9 +1,6 @@
 # Abaikan virtual environment folder
 py-xgboost-env312/
 
-# Abaikan file users.csv
-dataset/users.csv
-
 # Abaikan file/artefak umum Python & Streamlit
 __pycache__/
 *.py[cod]
