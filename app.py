@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.randForest_utils import predict_gallstone, show_health_tips
+from utils.randForest_utils import predict_gallstone, play_audio, show_health_tips, top_risk_factors, download_report
 
 
 st.set_page_config(
@@ -8,12 +8,11 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="auto",
     menu_items={
-        "About": "## **Get this on [Github](https://github.com/nothappenhere/gallstone-xgboost-streamlit.git)!**",
+        "About": "## **Get this on [Github](https://github.com/nothappenhere/gallstone-predict-streamlit.git)!**",
     },
 )
 
 
-# Streamlit UI
 # Streamlit UI
 st.title("Aplikasi Prediksi Gallstone dengan RandomForest")
 
@@ -45,12 +44,11 @@ Aplikasi ini bertujuan untuk:
 )
 
 
-
 # UI
 st.divider()
 st.title("Prediksi Gallstone Status dengan RandomForest")
 
-with st.form("prediction_form"):
+with st.container(border=True):
     vertical_divider = """
                   <div class="divider-vertical-line"></div>
                   <style>
@@ -126,23 +124,24 @@ with st.form("prediction_form"):
     with st.container(height=100, border=True):
         row1 = st.columns([8.0, 0.2, 8.0, 0.2, 8.0])
         with row1[0]:
-            Height = st.number_input(
-                "Height", help="Tinggi badan (cm)", min_value=0, max_value=200
+            Weight = st.number_input(
+                "Weight", help="Berat badan (kg)", min_value=0, max_value=150
             )
         with row1[1]:
             st.html(vertical_divider)
         with row1[2]:
-            Weight = st.number_input(
-                "Weight", help="Berat badan (kg)", min_value=0, max_value=150
+            Height = st.number_input(
+                "Height", help="Tinggi badan (cm)", min_value=0, max_value=200
             )
         with row1[3]:
             st.html(vertical_divider)
         with row1[4]:
+            BMI_val = Weight / ((Height/100)**2) if Weight or Height != 0 else 0.0
             BMI = st.number_input(
                 "Body Mass Index (BMI)",
                 help="Indeks massa tubuh",
-                min_value=0,
-                max_value=50,
+                value= BMI_val,
+                min_value=0.0,
             )
 
     st.divider()
@@ -272,15 +271,14 @@ with st.form("prediction_form"):
                 placeholder="Penanda inflamasi?",
             )
 
-    submitted = st.form_submit_button(
+    submitted = st.button(
         ":material/planner_review: Prediksi", type="primary", use_container_width=True
     )
 
     if submitted:
-        # 2. Buat kamus (mapping) → jauh lebih mudah di‑maintain
+        # 1. Buat kamus (mapping) → lebih mudah di‑maintain
         mapping_hfa = {label: idx for idx, label in enumerate(HFA_OPTIONS)}
-
-        # 3. Ambil nilai numeriknya; kalau user belum memilih, mapping_hfa.get() akan mengembalikan None
+        # 2. Ambil nilai numeriknya; kalau user belum memilih, mapping_hfa.get() akan mengembalikan None
         hfa_value = mapping_hfa.get(HFA)
         
         input_values = [
@@ -307,30 +305,61 @@ with st.form("prediction_form"):
             1 if CRP == "Ada inflamasi" else 0,
         ]
         
-        if None in input_values:
-            st.divider()
-            st.warning(":warning: Semua kolom wajib diisi sebelum melakukan prediksi.")
-        else:
-
-            result = predict_gallstone(input_values)
-            result_str = "positif" if result == 1 else "negatif"
-            result_clr = "inverse" if result == 1 else "normal"
+        # if None in input_values:
+        #     st.divider()
+        #     st.warning(":warning: Semua kolom wajib diisi sebelum melakukan prediksi.")
+        # else:
+        result = predict_gallstone(input_values)
+        result_str = "positif" if result == 1 else "negatif"
+        result_clr = "inverse" if result == 1 else "normal"
+        
+        col1, col2 = st.columns(spec=2, vertical_alignment="center")
+        col1.metric(
+            label="Gallstone Status",
+            value=result_str.capitalize(),
+            delta="Hasil Prediksi",
+            delta_color=result_clr,
+            border=True,
+        )
+        
+        if result_str == "positif":
+            ucapan = f"Hasil menunjukkan kemungkinan adanya batu empedu. Disarankan untuk konsultasi lebih lanjut ke fasilitas layanan kesehatan."
+            col2.error(ucapan)
             
-            col1, col2 = st.columns(spec=[0.3, 0.7], vertical_alignment="center")
-            col1.metric(
-                label="Gallstone Status",
-                value=result_str.capitalize(),
-                delta="Hasil Prediksi",
-                delta_color=result_clr,
-                border=True,
+            col2.download_button(
+                label="Download hasil diganosis",
+                data=download_report(result_str, input_values),
+                file_name="laporan_gallstone.txt",
+                on_click="ignore",
+                type="primary",
+                icon=":material/download:",
+                use_container_width=True,
             )
             
-            if result_str == "positif":
-                col2.error("Hasil menunjukkan kemungkinan adanya batu empedu.")
-            else:
-                col2.info("Tidak terdeteksi kemungkinan batu empedu.")
+            # Ucapkan dengan gTTS dalam Bahasa Indonesia
+            play_audio(ucapan, autoplay=True)
 
-            st.divider()
+            col1, col2 = st.columns(2)
+            with col1.container(border=True):
+                st.markdown(f"""
+                    ### :material/stethoscope: Ringkasan Diagnosa
+                    - **Status:** `{result_str.capitalize()}`
+                    - **Usia:** {Age} tahun
+                    - **Jenis Kelamin:** {Gender}
+                    - **BMI:** {BMI:.2f}
+                    - **Kadar Glukosa:** {Glucose} mg/dL
+                """)
+
+            with col2.container(border=True):
+                st.markdown(top_risk_factors(input_values))
+        else:
+            ucapan = f"Tidak ditemukan tanda-tanda batu empedu. Tetap jaga kesehatan dan pola makan seimbang!"
+            col2.info(ucapan)
             
-            st.markdown("### 💡 Saran Kesehatan Berdasarkan Data Anda")
-            show_health_tips(input_values)
+            # Ucapkan dengan gTTS dalam Bahasa Indonesia
+            play_audio(ucapan, autoplay=True)
+
+        st.divider()
+        
+        st.markdown("### :material/lightbulb_2: Saran Kesehatan Berdasarkan Data Anda")
+        show_health_tips(input_values)
