@@ -1,40 +1,40 @@
-# **Prediksi Gallstone (Batu Empedu) dengan Streamlit**
+# **Prediksi Batu Empedu (*Gallstone*) dengan Streamlit**
 
-Proyek ini adalah aplikasi berbasis **Machine Learning** dan **Streamlit** yang digunakan untuk **memprediksi kemungkinan seseorang menderita penyakit Gallstone (batu empedu)** berdasarkan berbagai parameter kesehatan.
+Proyek ini adalah aplikasi berbasis **Machine Learning** dan **Streamlit** yang digunakan untuk **memprediksi kemungkinan seseorang menderita penyakit Batu Empedu (*Gallstone*)** berdasarkan berbagai parameter kesehatan.
 
 Aplikasi ini dapat memberikan:
-- Prediksi status *positif* atau *negatif* Gallstone,
+- Prediksi status *positif* atau *negatif* Batu Empedu (*Gallstone*),
 - Visualisasi hasil prediksi dengan indikator warna,
 - Rekomendasi/saran kesehatan berdasarkan input pengguna.
 
 ## Fitur Utama
 - Input data klinis seperti usia, jenis kelamin, komorbiditas, data antropometri, hingga nilai lab, dll
-- Prediksi otomatis dengan model XGBoost yang telah dilatih
-- Tampilan interaktif menggunakan [Streamlit](https://streamlit.io/)
+- Prediksi otomatis dengan model **RandomForest** yang telah dilatih sebelumnya
+- Tampilan interaktif menggunakan **Streamlit**
 - Saran kesehatan otomatis ditampilkan berdasarkan nilai input
-- Model sudah ditraining dan di-*deploy* lokal
+- Model sudah ditraining dan di-*deploy* di lokal
 
 ## Teknologi & Library
-- Python `3.9+`
+- Python `3.10+`
 - [Streamlit](https://streamlit.io/) – untuk UI berbasis web
-- [XGBoost](https://xgboost.ai/) – model prediktif
+- [RandomForest](https://en.wikipedia.org/wiki/Random_forest) – model prediktif
 - [Scikit-Learn](https://scikit-learn.org/) – untuk preprocessing
 - [Pandas](https://pandas.pydata.org/) – untuk manipulasi data
 - [Joblib](https://joblib.readthedocs.io/) – untuk load model dan scaler
 
 ## Instalasi
-1. Pastikan Python `3.9` atau lebih tinggi sudah terinstall.
+1. Pastikan Python `3.10` atau lebih tinggi sudah terinstall.
 2. Clone repository ini:
 ```bash
-git clone https://github.com/nothappenhere/gallstone-xgboost-streamlit.git
-cd gallstone-xgboost-streamlit
+git clone https://github.com/nothappenhere/gallstone-predict-streamlit.git
+cd gallstone-predict-streamlit
 ```
 4. Buat dan aktifkan virtual environment:
 ```bash
-python -m venv py-xgboost-env312
+python -m venv py-randforest-env312
 
-source py-xgboost-env312/bin/activate  # (Linux/Mac)
-py-xgboost-env312\Scripts\activate     # (Windows)
+source py-randforest-env312/bin/activate  # (Linux/Mac)
+py-randforest-env312\Scripts\activate     # (Windows)
 ```
 5. Install semua library yang dibutuhkan dengan menjalankan perintah berikut:
 ```bash
