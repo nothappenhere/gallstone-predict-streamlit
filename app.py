@@ -305,61 +305,61 @@ with st.container(border=True):
             1 if CRP == "Ada inflamasi" else 0,
         ]
         
-        # if None in input_values:
-        #     st.divider()
-        #     st.warning(":warning: Semua kolom wajib diisi sebelum melakukan prediksi.")
-        # else:
-        result = predict_gallstone(input_values)
-        result_str = "positif" if result == 1 else "negatif"
-        result_clr = "inverse" if result == 1 else "normal"
-        
-        col1, col2 = st.columns(spec=2, vertical_alignment="center")
-        col1.metric(
-            label="Gallstone Status",
-            value=result_str.capitalize(),
-            delta="Hasil Prediksi",
-            delta_color=result_clr,
-            border=True,
-        )
-        
-        if result_str == "positif":
-            ucapan = f"Hasil menunjukkan kemungkinan adanya batu empedu. Disarankan untuk konsultasi lebih lanjut ke fasilitas layanan kesehatan."
-            col2.error(ucapan)
+        if None in input_values:
+            st.divider()
+            st.warning(":warning: Semua kolom wajib diisi sebelum melakukan prediksi.")
+        else:
+            result = predict_gallstone(input_values)
+            result_str = "positif" if result == 1 else "negatif"
+            result_clr = "inverse" if result == 1 else "normal"
             
-            col2.download_button(
-                label="Download hasil diganosis",
-                data=download_report(result_str, input_values),
-                file_name="laporan_gallstone.txt",
-                on_click="ignore",
-                type="primary",
-                icon=":material/download:",
-                use_container_width=True,
+            col1, col2 = st.columns(spec=2, vertical_alignment="center")
+            col1.metric(
+                label="Gallstone Status",
+                value=result_str.capitalize(),
+                delta="Hasil Prediksi",
+                delta_color=result_clr,
+                border=True,
             )
             
-            # Ucapkan dengan gTTS dalam Bahasa Indonesia
-            play_audio(ucapan, autoplay=True)
+            if result_str == "positif":
+                ucapan = f"Hasil menunjukkan kemungkinan adanya batu empedu. Disarankan untuk konsultasi lebih lanjut ke fasilitas layanan kesehatan."
+                col2.error(ucapan)
+                
+                col2.download_button(
+                    label="Download hasil diganosis",
+                    data=download_report(result_str, input_values),
+                    file_name="laporan_gallstone.txt",
+                    on_click="ignore",
+                    type="primary",
+                    icon=":material/download:",
+                    use_container_width=True,
+                )
+                
+                # Ucapkan dengan gTTS dalam Bahasa Indonesia
+                play_audio(ucapan, autoplay=True)
 
-            col1, col2 = st.columns(2)
-            with col1.container(border=True):
-                st.markdown(f"""
-                    ### :material/stethoscope: Ringkasan Diagnosa
-                    - **Status:** `{result_str.capitalize()}`
-                    - **Usia:** {Age} tahun
-                    - **Jenis Kelamin:** {Gender}
-                    - **BMI:** {BMI:.2f}
-                    - **Kadar Glukosa:** {Glucose} mg/dL
-                """)
+                col1, col2 = st.columns(2)
+                with col1.container(border=True):
+                    st.markdown(f"""
+                        ### :material/stethoscope: Ringkasan Diagnosa
+                        - **Status:** `{result_str.capitalize()}`
+                        - **Usia:** {Age} tahun
+                        - **Jenis Kelamin:** {Gender}
+                        - **BMI:** {BMI:.2f}
+                        - **Kadar Glukosa:** {Glucose} mg/dL
+                    """)
 
-            with col2.container(border=True):
-                st.markdown(top_risk_factors(input_values))
-        else:
-            ucapan = f"Tidak ditemukan tanda-tanda batu empedu. Tetap jaga kesehatan dan pola makan seimbang!"
-            col2.info(ucapan)
+                with col2.container(border=True):
+                    st.markdown(top_risk_factors(input_values))
+            else:
+                ucapan = f"Tidak ditemukan tanda-tanda batu empedu. Tetap jaga kesehatan dan pola makan seimbang!"
+                col2.info(ucapan)
+                
+                # Ucapkan dengan gTTS dalam Bahasa Indonesia
+                play_audio(ucapan, autoplay=True)
+
+            st.divider()
             
-            # Ucapkan dengan gTTS dalam Bahasa Indonesia
-            play_audio(ucapan, autoplay=True)
-
-        st.divider()
-        
-        st.markdown("### :material/lightbulb_2: Saran Kesehatan Berdasarkan Data Anda")
-        show_health_tips(input_values)
+            st.markdown("### :material/lightbulb_2: Saran Kesehatan Berdasarkan Data Anda")
+            show_health_tips(input_values)
